@@ -1,47 +1,60 @@
-import React from 'react';
-import { Button, View } from 'react-native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { Component } from "react";
+import { AppLoading } from "expo";
+import { Container, Text } from "native-base";
+import * as Font from "expo-font";
+import { Ionicons } from "@expo/vector-icons";
+import { NavigationContainer } from "@react-navigation/native";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 
-function HomeScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button
-        onPress={navigation.openDrawer}
-        title="Open navigation drawer"
-      />
-      <Button
-        onPress={() => navigation.navigate('Notifications')}
-        title="Go to notifications"
-      />
-    </View>
-  );
-}
-
-function NotificationsScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button
-        onPress={navigation.openDrawer}
-        title="Open navigation drawer"
-      />
-      <Button
-        onPress={() => navigation.goBack()}
-        title="Go back home"
-      />
-    </View>
-  );
-}
+import HomeStack from "./src/routes/HomeStack";
+import AboutStack from "./src/routes/AboutStack";
 
 const Drawer = createDrawerNavigator();
 
-export default function App() {
-  return (
-    <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Home">
-        <Drawer.Screen name="Home" component={HomeScreen} />
-        <Drawer.Screen name="Notifications" component={NotificationsScreen} />
-      </Drawer.Navigator>
-    </NavigationContainer>
-  );
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isReady: false,
+    };
+  }
+
+  async componentDidMount() {
+    await Font.loadAsync({
+      Roboto: require("native-base/Fonts/Roboto.ttf"),
+      Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
+      ...Ionicons.font,
+    });
+    this.setState({ isReady: true });
+  }
+
+  render() {
+    if (!this.state.isReady) {
+      return <AppLoading />;
+    }
+
+    return (
+      <NavigationContainer>
+        <Drawer.Navigator
+          drawerContentOptions={{
+            activeTintColor: "#e91e63",
+            itemStyle: { marginVertical: 5 },
+          }}
+        >
+          <Drawer.Screen
+            name="Home"
+            options={{ drawerLabel: "First page Option" }}
+            component={HomeStack}
+          />
+          <Drawer.Screen
+            name="About"
+            options={{ drawerLabel: "Second page Option" }}
+            component={AboutStack}
+          />
+        </Drawer.Navigator>
+      </NavigationContainer>
+    );
+  }
 }
+
+export default App;
